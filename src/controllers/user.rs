@@ -9,7 +9,9 @@ pub async fn sign_in(
     Extension(repo): RepoExt,
     Json(new_user): Json<UserDTO>,
 ) -> Result<Json<Auth>> {
+    print!("banana");
     let user = usecases::users::sign_in(repo.clone(), &new_user).await?;
+    print!("{:?}", user);
     Ok(Json(user))
 }
 

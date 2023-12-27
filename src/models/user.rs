@@ -10,9 +10,15 @@ pub struct UserId {
 pub struct User {
     pub id: String,
     pub email: String,
-    pub password: String,
+    pub role: String,
+    pub password_hash: String,
     pub created_at: String,
     pub updated_at: String,
+}
+
+pub enum UserRole<'a> {
+    Admin(&'a str),
+    User(&'a str),
 }
 
 #[derive(Serialize, Deserialize, FromRow, Debug)]
@@ -32,4 +38,16 @@ pub type UserList = Vec<User>;
 pub struct Auth {
     pub auth_token: String,
     pub refresh_token: String,
+    pub user: AuthPayload,
+    pub exp: String,
 }
+
+#[derive(Serialize, Deserialize, FromRow, Debug)]
+pub struct AuthPayload {
+    pub id: String,
+    pub email: String,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+pub struct AuthExp {}

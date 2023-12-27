@@ -13,8 +13,8 @@ pub fn router() -> Router {
 
 fn auth_routes() -> Router {
     Router::new()
-        .route("/login", post(user::sign_in))
-        .route("/register", post(user::sign_up))
+        .route("/sing-in", post(user::sign_in))
+        .route("/sing-up", post(user::sign_up))
 }
 
 fn health_check_routes() -> Router {
