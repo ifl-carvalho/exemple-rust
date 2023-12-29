@@ -1,10 +1,9 @@
 #![deny(clippy::all)]
 
+use banana::bootstrap;
 use std::env;
 use tokio::net::TcpListener;
 use tracing_subscriber;
-
-use banana::bootstrap;
 
 #[tokio::main]
 async fn main() {

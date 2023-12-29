@@ -16,6 +16,8 @@ pub enum AppError {
     BadRequest(Vec<&'static str>),
     #[error("Not Found: {0}")]
     NotFound(&'static str),
+    #[error("Conflict: {0}")]
+    Conflict(&'static str),
     #[error("Invalid params: {0:?}")]
     InvalidParams(Vec<&'static str>),
     #[error("Invalid file format")]
@@ -32,6 +34,7 @@ impl IntoResponse for AppError {
             AppError::Unauthorized(_) => (StatusCode::UNAUTHORIZED, self.to_string()),
             AppError::BadRequest(_) => (StatusCode::BAD_REQUEST, self.to_string()),
             AppError::NotFound(_) => (StatusCode::NOT_FOUND, self.to_string()),
+            AppError::Conflict(_) => (StatusCode::CONFLICT, self.to_string()),
             AppError::InvalidParams(_) => (StatusCode::UNPROCESSABLE_ENTITY, self.to_string()),
             AppError::MultipartError(_) => (StatusCode::UNPROCESSABLE_ENTITY, self.to_string()),
             AppError::InvalidFileFormat => (StatusCode::UNPROCESSABLE_ENTITY, self.to_string()),

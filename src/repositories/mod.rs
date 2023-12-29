@@ -1,10 +1,9 @@
-use axum::Extension;
-use std::sync::Arc;
+pub mod user;
 
 use crate::database::postgres;
 use crate::repositories::user::{UserRepo, UserRepoImpl};
-
-pub mod user;
+use axum::Extension;
+use std::sync::Arc;
 
 pub type RepoExt = Extension<Arc<RepoImpls>>;
 

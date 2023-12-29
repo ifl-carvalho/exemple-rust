@@ -1,30 +1,38 @@
-// use anyhow::{Context, Result};
-// use argon2::{password_hash, Argon2, PasswordHash};
+use crate::error::{AppError, Result};
+use anyhow::{anyhow, Context};
+use argon2::{
+    password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+    Argon2,
+};
+use tokio::task;
 
-// async fn hash_password(password: String) -> Result<String> {
-//     Ok(tokio::task::spawn_blocking(move || -> Result<String> {
-//         let salt = password_hash::SaltString::generate(rand::thread_rng());
-//         Ok(
-//             PasswordHash::generate(Argon2::default(), password, salt.as_str())
-//                 .map_err(|e| anyhow::anyhow!("failed to generate password hash: {}", e))?
-//                 .to_string(),
-//         )
-//     })
-//     .await
-//     .context("panic in generating password hash")??)
-// }
+pub async fn hash_password(password: String) -> Result<String> {
+    let hash = task::spawn_blocking(move || {
+        let salt = SaltString::generate(&mut OsRng);
+        let argon2 = Argon2::default();
+        let hash = argon2.hash_password(password.as_bytes(), &salt);
+        hash.map(|hash| hash.to_string())
+    })
+    .await
+    .context("Error on password hashing Blocking Thread")?;
 
-// async fn verify_password(password: String, password_hash: String) -> Result<()> {
-//     Ok(tokio::task::spawn_blocking(move || -> Result<()> {
-//         let hash = PasswordHash::new(&password_hash)
-//             .map_err(|e| anyhow::anyhow!("invalid password hash: {}", e))?;
+    match hash {
+        Ok(hash) => Ok(hash),
+        Err(_) => Err(AppError::Other(anyhow!("Error hashing password"))),
+    }
+}
 
-//         hash.verify_password(&[&Argon2::default()], password)
-//             .map_err(|e| match e {
-//                 password_hash::Error::Password => Error::Unauthorized,
-//                 _ => anyhow::anyhow!("failed to verify password hash: {}", e).into(),
-//             })
-//     })
-//     .await
-//     .context("panic in verifying password hash")??)
-// }
+pub async fn verify_password(password: String, password_hash: String) -> Result<()> {
+    let result = task::spawn_blocking(move || {
+        let parsed_hash = PasswordHash::new(&password_hash)?;
+        let argon2 = Argon2::default();
+        argon2.verify_password(&password.as_bytes(), &parsed_hash)
+    })
+    .await
+    .context("Error on password verification Blocking Thread")?;
+
+    match result {
+        Ok(_) => Ok(()),
+        Err(_) => Err(AppError::Unauthorized("Invalid email or password")),
+    }
+}

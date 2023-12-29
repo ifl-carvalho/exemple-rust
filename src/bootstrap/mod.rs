@@ -1,9 +1,7 @@
-use std::sync::Arc;
-
 use crate::repositories::create_repositories;
 use crate::router::router;
-use axum::Extension;
-use axum::{http::header::CONTENT_TYPE, Router};
+use axum::{http::header::CONTENT_TYPE, Extension, Router};
+use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 
 pub fn cors() -> CorsLayer {

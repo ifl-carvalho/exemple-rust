@@ -4,19 +4,13 @@
 CREATE TYPE enum_role AS ENUM ('admin', 'user');
 
 -- Add a new field 'role' to the 'users' table
-ALTER TABLE
-  "users"
-ADD
-  COLUMN role enum_role NOT NULL DEFAULT 'user';
+ALTER TABLE "users"
+ADD COLUMN role enum_role NOT NULL DEFAULT 'user';
 
 -- Update the 'role' column with the default value 'user' for existing rows
-UPDATE
-  "users"
-SET
-  role = 'user';
+UPDATE "users"
+SET role = 'user';
 
 -- Add a check constraint to enforce the enum values for the 'role' column
-ALTER TABLE
-  "users"
-ADD
-  CONSTRAINT chk_valid_role CHECK (role IN ('admin', 'user'));
+ALTER TABLE "users"
+ADD CONSTRAINT chk_valid_role CHECK (role IN ('admin', 'user'));

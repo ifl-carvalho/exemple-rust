@@ -7,14 +7,14 @@ use axum::{
 pub fn router() -> Router {
     Router::new()
         .route("/", get(root))
-        .nest("/auth", auth_routes())
+        .nest("/user", auth_routes())
         .nest("/health-check", health_check_routes())
 }
 
 fn auth_routes() -> Router {
     Router::new()
-        .route("/sing-in", post(user::sign_in))
-        .route("/sing-up", post(user::sign_up))
+        .route("/login", post(user::login))
+        .route("/register", post(user::register))
 }
 
 fn health_check_routes() -> Router {

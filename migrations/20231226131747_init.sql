@@ -22,11 +22,3 @@ begin
     EXECUTE FUNCTION set_updated_at();', tablename);
 end;
 $$ language plpgsql;
-
--- Check if the collation "case_insensitive" already exists before creating it
-DO $$ 
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_collation WHERE collname = 'case_insensitive') THEN
-        CREATE COLLATION case_insensitive (provider = icu, locale = 'und-u-ks-level2', deterministic = false);
-    END IF;
-END $$;

@@ -1,53 +1,46 @@
+use crate::models::date::Date;
 use serde::{Deserialize, Serialize};
-use sqlx::FromRow;
+use sqlx::{prelude::Type, FromRow};
+use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, FromRow, Debug)]
 pub struct UserId {
-    pub id: String,
+    pub id: Uuid,
 }
 
 #[derive(Serialize, Deserialize, FromRow, Debug)]
 pub struct User {
-    pub id: String,
+    pub id: Uuid,
+    pub role: Role,
     pub email: String,
-    pub role: String,
     pub password_hash: String,
-    pub created_at: String,
-    pub updated_at: String,
+    pub created_at: Date,
+    pub updated_at: Option<Date>,
 }
 
-pub enum UserRole<'a> {
-    Admin(&'a str),
-    User(&'a str),
+#[derive(Serialize, Deserialize, Debug, Type, Clone)]
+#[sqlx(type_name = "enum_role", rename_all = "lowercase")]
+pub enum Role {
+    Admin,
+    User,
 }
 
-#[derive(Serialize, Deserialize, FromRow, Debug)]
-pub struct UserDTO {
+#[derive(Serialize, Deserialize, Debug)]
+pub struct PublicUserInfo {
+    pub id: Uuid,
+    pub role: Role,
+    pub email: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct UserInput {
     pub email: String,
     pub password: String,
 }
 
-#[derive(Serialize, Deserialize, FromRow, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct UserConditions {
     pub email: Option<String>,
 }
 
 pub type UserList = Vec<User>;
-
-#[derive(Serialize, Deserialize, FromRow, Debug)]
-pub struct Auth {
-    pub auth_token: String,
-    pub refresh_token: String,
-    pub user: AuthPayload,
-    pub exp: String,
-}
-
-#[derive(Serialize, Deserialize, FromRow, Debug)]
-pub struct AuthPayload {
-    pub id: String,
-    pub email: String,
-    pub created_at: String,
-    pub updated_at: String,
-}
-
-pub struct AuthExp {}
