@@ -1,12 +1,12 @@
-use chrono::{Duration, Utc};
-
 use crate::error::Result;
 use crate::models::auth::Auth;
 use crate::models::user::{PublicUserInfo, UserId, UserInput};
 use crate::repositories::{user::UserRepo, Repositories};
 use crate::utils::hash::{hash_password, verify_password};
 use crate::utils::jwt::create_jwt;
+use chrono::{Duration, Utc};
 use std::sync::Arc;
+use validator::Validate;
 
 pub async fn login<R: Repositories>(repo: Arc<R>, credentials: &UserInput) -> Result<Auth> {
     let user = repo.user().find_by_email(&credentials.email).await?;
@@ -38,6 +38,8 @@ pub async fn register<R: Repositories>(repo: Arc<R>, user_input: &UserInput) -> 
         email: user_input.email.clone(),
         password: hash_password(user_input.password.clone()).await?,
     };
+
+    user_input.validate()?;
 
     let user_id = repo.user().add(&new_user).await?;
 

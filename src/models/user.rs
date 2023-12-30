@@ -2,6 +2,7 @@ use crate::models::date::Date;
 use serde::{Deserialize, Serialize};
 use sqlx::{prelude::Type, FromRow};
 use uuid::Uuid;
+use validator::Validate;
 
 #[derive(Serialize, Deserialize, FromRow, Debug)]
 pub struct UserId {
@@ -18,7 +19,7 @@ pub struct User {
     pub updated_at: Option<Date>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Type, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Type)]
 #[sqlx(type_name = "enum_role", rename_all = "lowercase")]
 pub enum Role {
     Admin,
@@ -32,8 +33,9 @@ pub struct PublicUserInfo {
     pub email: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Validate)]
 pub struct UserInput {
+    #[validate(email)]
     pub email: String,
     pub password: String,
 }

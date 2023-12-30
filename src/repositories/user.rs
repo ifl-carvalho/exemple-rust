@@ -24,9 +24,9 @@ impl UserRepo for UserRepoImpl {
     async fn add(&self, input: &UserInput) -> Result<UserId> {
         let result = sqlx::query_as::<_, UserId>(
             r#"
-            insert into users (email, password_hash)
-            values ($1, $2)
-            returning id
+            INSERT INTO users (email, password_hash)
+            VALUES ($1, $2)
+            RETURNING id
             "#,
         )
         .bind(&input.email)
