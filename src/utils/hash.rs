@@ -1,9 +1,8 @@
 use crate::error::{AppError, Result};
 use anyhow::{anyhow, Context};
-use argon2::{
-    password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
-    Argon2,
-};
+use argon2::password_hash::rand_core::OsRng;
+use argon2::password_hash::{PasswordHash, PasswordHasher, PasswordVerifier, SaltString};
+use argon2::Argon2;
 use tokio::task;
 
 pub async fn hash_password(password: String) -> Result<String> {

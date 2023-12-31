@@ -1,14 +1,14 @@
 use crate::error::{AppError, Result};
 use crate::models::auth::Claims;
+use crate::models::common::Uuid;
 use crate::models::user::Role;
 use anyhow::Context;
 use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use std::env;
 use tokio::task;
-use uuid::Uuid;
 
-pub async fn create_jwt(sub: Uuid, scope: Role, duration: Duration) -> Result<String> {
+pub async fn encode_jwt(sub: Uuid, scope: Role, duration: Duration) -> Result<String> {
     let secret = env::var("JWT_SECRET").expect("JWT_SECRET must be set");
 
     let token = task::spawn_blocking(move || {
@@ -34,7 +34,7 @@ pub async fn create_jwt(sub: Uuid, scope: Role, duration: Duration) -> Result<St
     }
 }
 
-pub async fn verify_jwt(token: String) -> Result<Claims> {
+pub async fn decode_jwt(token: String) -> Result<Claims> {
     let secret = env::var("JWT_SECRET").expect("JWT_SECRET must be set");
 
     let token = task::spawn_blocking(move || {

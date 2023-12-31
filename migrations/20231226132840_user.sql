@@ -1,10 +1,10 @@
 -- Add migration script here
-create table "users" (
-    id uuid primary key default uuid_generate_v1mc(),
-    email text unique not null,
-    password_hash text not null,
-    created_at timestamptz not null default now(),
-    updated_at timestamptz
+CREATE TABLE "users" (
+    id uuid PRIMARY KEY DEFAULT uuid_generate_v1mc(),
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ
 );
 
 SELECT trigger_updated_at('"users"');

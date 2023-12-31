@@ -1,5 +1,6 @@
 use crate::database::postgres::Db;
 use crate::error::{AppError, Result};
+use crate::models::common::Uuid;
 use crate::models::user::{User, UserId, UserInput};
 use async_trait::async_trait;
 
@@ -16,6 +17,7 @@ impl UserRepoImpl {
 #[async_trait]
 pub trait UserRepo {
     async fn add(&self, input: &UserInput) -> Result<UserId>;
+    async fn find_by_id(&self, id: &Uuid) -> Result<User>;
     async fn find_by_email(&self, email: &String) -> Result<User>;
 }
 
@@ -43,6 +45,21 @@ impl UserRepo for UserRepoImpl {
         }
     }
 
+    async fn find_by_id(&self, id: &Uuid) -> Result<User> {
+        let result = sqlx::query_as::<_, User>("SELECT * FROM users WHERE id=$1")
+            .bind(id)
+            .fetch_one(&*self.pool)
+            .await;
+
+        match result {
+            Ok(user) => Ok(user),
+            Err(e) => {
+                tracing::error!("Database Error: {:?}", e);
+                Err(AppError::NotFound("User not found"))
+            }
+        }
+    }
+
     async fn find_by_email(&self, email: &String) -> Result<User> {
         let result = sqlx::query_as::<_, User>("SELECT * FROM users WHERE email=$1")
             .bind(email)
@@ -53,7 +70,7 @@ impl UserRepo for UserRepoImpl {
             Ok(user) => Ok(user),
             Err(e) => {
                 tracing::error!("Database Error: {:?}", e);
-                Err(AppError::Unauthorized("Invalid email or password"))
+                Err(AppError::NotFound("User not found"))
             }
         }
     }

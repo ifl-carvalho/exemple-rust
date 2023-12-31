@@ -1,9 +1,7 @@
-use axum::{
-    extract::rejection::FormRejection,
-    http::StatusCode,
-    response::{IntoResponse, Response},
-    Json,
-};
+use axum::extract::rejection::FormRejection;
+use axum::http::StatusCode;
+use axum::response::{IntoResponse, Response};
+use axum::Json;
 use serde_json::json;
 use thiserror::Error;
 use validator::ValidationErrors;
