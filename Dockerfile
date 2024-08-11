@@ -1,9 +1,20 @@
-## TODO: Fix Dockerfile (Images are too big)
-FROM rust:1.74.1
+FROM rust:latest AS builder
+WORKDIR /app
 
-WORKDIR /usr/src/myapp
-COPY . .
+COPY Cargo.toml .
+RUN mkdir src && echo "fn main() {}" > src/main.rs
+RUN cargo build --release
 
-RUN cargo install --path .
+COPY src src
+RUN touch src/main.rs
+RUN cargo build --release
 
-CMD ["banana"]
+RUN strip target/release/banana
+
+FROM alpine:latest as release
+WORKDIR /app
+COPY --from=builder /app/target/release/banana .
+
+EXPOSE 3333
+
+CMD ["./banana"]
